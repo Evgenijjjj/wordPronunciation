@@ -12,13 +12,13 @@
             android:layout_gravity="top"
             android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="60dp">
+            android:layout_height="wrap_content"
+            android:padding="10dp">
 
         <ImageView
-                android:layout_marginLeft="10dp"
                 android:layout_gravity="center_vertical"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:src = "@drawable/speaker"/>
 
         <TextView
@@ -26,19 +26,37 @@
                 android:layout_gravity="center_vertical"
                 android:textColor="@android:color/white"
                 android:text="example"
+                android:textSize="22dp"
                 android:id="@+id/current_word_textview_startpage_activity"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
 
     </LinearLayout>
 
-    <ProgressBar
-            android:id="@+id/progressbar_textview_startpage_activity"
+    <com.budiyev.android.circularprogressbar.CircularProgressBar
+            android:id="@+id/progressbar_startpage_activity"
             android:layout_gravity="center"
             android:layout_width="match_parent"
             android:layout_height="200dp"
-            android:indeterminateDrawable="@drawable/progress"
-    />
+            app:animateProgress="false"
+            app:backgroundStrokeColor="#ff3f51b5"
+            app:backgroundStrokeWidth="20dp"
+            app:drawBackgroundStroke="false"
+            app:foregroundStrokeColor="@color/originalRed"
+            app:foregroundStrokeWidth="2dp"
+            app:indeterminate="false"
+            app:maximum="100"
+            app:progress="100"/>
+
+    <TextView
+            android:textColor="@color/originalRed"
+            android:textStyle="bold"
+            android:id="@+id/start_textview_startpage_activity"
+            android:layout_gravity="center"
+            android:textSize="30dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tap to start"/>
 
     <LinearLayout
             android:orientation="horizontal"
@@ -104,7 +122,7 @@
                     android:id="@+id/current_result_textview_startpage_activity"
                     android:textSize="30dp"
                     android:layout_gravity="center"
-                    android:text="2"
+                    android:text="0"
                     android:textColor="@color/originalRed"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>

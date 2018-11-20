@@ -7,7 +7,7 @@
         <size android:width="76dip" android:height="76dip" />
         <gradient android:type="sweep" android:useLevel="false"
                   android:startColor="@color/originalRed"
-                  android:endColor="@color/originalRed"
+                  android:endColor="@android:color/transparent"
                   android:angle="0"
         />
     </shape>
