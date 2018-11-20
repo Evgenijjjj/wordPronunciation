@@ -30,6 +30,7 @@ class StartPage : Activity() {
     private var mSpeechRecognizer: SpeechRecognizer? = null
     private var mSpeechRecognizerIntent: Intent? = null
 
+    private var mAudioManager: AudioManager? = null
     private var sharedPreferences: SharedPreferences? = null
 
     private var currentResult: String = ""
@@ -47,6 +48,8 @@ class StartPage : Activity() {
 
         if (!checkPermissions())
             checkPermissions()
+
+        mAudioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
         sharedPreferences = getPreferences(Context.MODE_PRIVATE)
         var bestRes = sharedPreferences?.getInt(getString(R.string.bestResultKey), -1)
@@ -71,13 +74,28 @@ class StartPage : Activity() {
         wordsList?.add("rectangle")
         wordsList?.add("london")
         wordsList?.add("russia")
-
-        Log.d("test_async", "before: $wordsList")
-
-        wordsList?.shuffle()
-        Log.d("test_async", "after: $wordsList")
-
-        current_word_textview_startpage_activity.text = wordsList!![curIndex]
+        wordsList?.add("book")
+        wordsList?.add("school")
+        wordsList?.add("children")
+        wordsList?.add("phone")
+        wordsList?.add("request")
+        wordsList?.add("remain")
+        wordsList?.add("relax")
+        wordsList?.add("vegetable")
+        wordsList?.add("wood")
+        wordsList?.add("workshop")
+        wordsList?.add("young")
+        wordsList?.add("yesterday")
+        wordsList?.add("zone")
+        wordsList?.add("version")
+        wordsList?.add("use")
+        wordsList?.add("unknown")
+        wordsList?.add("universal")
+        wordsList?.add("ugly")
+        wordsList?.add("true")
+        wordsList?.add("transformation")
+        wordsList?.add("sweet")
+        wordsList?.add("support")
 
 
         mTextToSpeech = TextToSpeech(this, TextToSpeech.OnInitListener {
@@ -120,7 +138,7 @@ class StartPage : Activity() {
         mSpeechRecognizer = SpeechRecognizer.createSpeechRecognizer(this)
         mSpeechRecognizer!!.setRecognitionListener(SpeechRecognitionListener())
         mSpeechRecognizerIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
-        mSpeechRecognizerIntent!!.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "uk")
+        mSpeechRecognizerIntent!!.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "en_US")
 
         start_textview_startpage_activity.setOnClickListener {
             if (progressBarAsyncTask != null) progressBarAsyncTask?.setTrainingFlag(false)
@@ -131,7 +149,13 @@ class StartPage : Activity() {
     }
 
     private fun enterTraining() {
+        wordsList?.shuffle()
+
         current_result_textview_startpage_activity.text = "0"
+
+        curIndex = 0
+        current_word_textview_startpage_activity.text = wordsList!![curIndex]
+
         unMuteSound()
         mTextToSpeech!!.speak(wordsList!![curIndex], TextToSpeech.QUEUE_FLUSH, null)
 
@@ -192,9 +216,10 @@ class StartPage : Activity() {
 
     private inner class ProgressBarAsyncTask: AsyncTask<Int,Int,Void>() {
         private var training = true
-        private var recognized = false
+
+        private var containsFlag = false
+
         private var nextWordFlag = false
-        private var loopIndex = 0
 
 
         override fun onPostExecute(result: Void?) {
@@ -203,12 +228,8 @@ class StartPage : Activity() {
             start_textview_startpage_activity.visibility = View.VISIBLE
             ripple_animation_startpage_activit.visibility = View.INVISIBLE
 
-            if (best_result_textview_startpage_activity.text.toString().toInt() < current_result_textview_startpage_activity.text.toString().toInt()) {
-                val editor = sharedPreferences?.edit()
-                editor?.putInt(getString(R.string.bestResultKey), current_result_textview_startpage_activity.text.toString().toInt())
-                editor?.apply()
-                best_result_textview_startpage_activity.text = current_result_textview_startpage_activity.text
-            }
+            start_textview_startpage_activity.text = "Tap to restart"
+            Toast.makeText(this@StartPage, "Wrong !\nYou say: $currentResult", Toast.LENGTH_LONG).show()
 
             super.onPostExecute(result)
         }
@@ -221,14 +242,8 @@ class StartPage : Activity() {
         override fun onProgressUpdate(vararg values: Int?) {
             progressbar_startpage_activity.progress = values[0]!!.toFloat()
 
-            if (currentResult.toLowerCase().contains(wordsList!![curIndex])) {
-                recognized = true
-                curIndex++
-                currentResult = ""
-                Log.d("test_async", "contains")
-
+            if (nextWordFlag) {
                 ripple_animation_startpage_activit.visibility = View.INVISIBLE
-
                 current_word_textview_startpage_activity.text = wordsList!![curIndex]
                 mSpeechRecognizer?.stopListening()
                 unMuteSound()
@@ -236,48 +251,100 @@ class StartPage : Activity() {
 
                 Handler().postDelayed({
                     muteSound()
-
                     mSpeechRecognizer?.startListening(mSpeechRecognizerIntent)
 
-                    Thread.sleep(200)
 
-                    recognized = false
-                    nextWordFlag = true
-
-                    current_result_textview_startpage_activity.text = (curIndex + 1).toString()
-
+                    current_result_textview_startpage_activity.text = curIndex.toString()
                     ripple_animation_startpage_activit.visibility = View.VISIBLE
 
-                }, 2000)
+                    updateSharedPref()
+0
+                }, 1200)
+
+                nextWordFlag = false
+                return
+            }
+
+
+            if (currentResult.toLowerCase().contains(wordsList!![curIndex].toLowerCase())) {
+                containsFlag = true
+
             }
         }
         override fun doInBackground(vararg p0: Int?): Void? {
             while (training) {
-                for (i in 0..100) {
+                for (i in 0..80) {
 
-                    if (nextWordFlag) {
-                        nextWordFlag = false
-                        Log.d("test_async", "break")
-                        break
-                    }
-
-                    if (!recognized) {
-                        publishProgress(i)
-                    }
-
+                    publishProgress(i)
 
                     try {
                         Thread.sleep(4 * 10)
                     } catch (e: Exception) {}
 
                 }
-                Log.d("test_async", "finish loop")
-                if (loopIndex < curIndex) loopIndex++
-                else training = false
+                mAudioManager?.isMicrophoneMute = true
+                Log.d("test_async", "MUTE")
 
+                for (i in 80..100) {
+                    publishProgress(i)
+
+                    try {
+                        Thread.sleep(7 * 10)
+                    } catch (e: Exception) {}
+
+                }
+
+                mAudioManager?.isMicrophoneMute = false
+                Log.d("test_async", "UNMUTE")
+
+                if (containsFlag) {
+                    Log.d("test_async", "CONTATINS: ${currentResult}")
+
+                    containsFlag = false
+                    curIndex++
+                    currentResult = ""
+
+                    nextWordFlag = true
+
+                    publishProgress(100)
+
+
+
+                    for (i in 0..50) {
+                        try {
+                            Thread.sleep(2 * 10)
+                        } catch (e: Exception) {}
+                    }
+
+
+                }
+                else {
+                    training = false
+                }
+
+
+                /*Log.d("test_async", "loopIndex: $loopIndex, curIndex: $curIndex")
+                if (!breakFlag) {
+                    if (loopIndex < curIndex) {
+                        loopIndex++; Log.d("test_async", "dont finish loop"); breakFlag = true
+                    } else {
+                        training = false; Log.d("test_async", "finish loop")
+                    }
+                } else breakFlag = false*/
             }
 
             return null
+        }
+
+        private fun updateSharedPref() {
+            if (best_result_textview_startpage_activity.text.toString().toInt() < current_result_textview_startpage_activity.text.toString().toInt()) {
+                val editor = sharedPreferences?.edit()
+                editor?.putInt(getString(R.string.bestResultKey), current_result_textview_startpage_activity.text.toString().toInt())
+                editor?.apply()
+                best_result_textview_startpage_activity.text = current_result_textview_startpage_activity.text
+            }
+
+
         }
 
         fun setTrainingFlag(tf: Boolean) {
