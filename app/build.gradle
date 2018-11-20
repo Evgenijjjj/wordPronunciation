@@ -32,6 +32,7 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 
     implementation 'com.budiyev.android:circular-progress-bar:1.2.1'
+    implementation 'com.skyfishjy.ripplebackground:library:1.0.1'
 }
 
 android {

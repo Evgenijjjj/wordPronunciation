@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.media.AudioManager
@@ -29,6 +30,8 @@ class StartPage : Activity() {
     private var mSpeechRecognizer: SpeechRecognizer? = null
     private var mSpeechRecognizerIntent: Intent? = null
 
+    private var sharedPreferences: SharedPreferences? = null
+
     private var currentResult: String = ""
     private var wordsList: MutableList<String>? = null
 
@@ -39,8 +42,23 @@ class StartPage : Activity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_start_page)
 
+        ripple_animation_startpage_activit.startRippleAnimation()
+        ripple_animation_startpage_activit.visibility = View.INVISIBLE
+
         if (!checkPermissions())
             checkPermissions()
+
+        sharedPreferences = getPreferences(Context.MODE_PRIVATE)
+        var bestRes = sharedPreferences?.getInt(getString(R.string.bestResultKey), -1)
+
+        if (bestRes == -1) {
+            val editor = sharedPreferences?.edit()
+            editor?.putInt(getString(R.string.bestResultKey), 0)
+            editor?.apply()
+            bestRes = 0
+        }
+
+        best_result_textview_startpage_activity.text = bestRes.toString()
 
         wordsList = mutableListOf()
 
@@ -49,6 +67,17 @@ class StartPage : Activity() {
         wordsList?.add("flat")
         wordsList?.add("training")
         wordsList?.add("phone")
+        wordsList?.add("circle")
+        wordsList?.add("rectangle")
+        wordsList?.add("london")
+        wordsList?.add("russia")
+
+        Log.d("test_async", "before: $wordsList")
+
+        wordsList?.shuffle()
+        Log.d("test_async", "after: $wordsList")
+
+        current_word_textview_startpage_activity.text = wordsList!![curIndex]
 
 
         mTextToSpeech = TextToSpeech(this, TextToSpeech.OnInitListener {
@@ -113,6 +142,7 @@ class StartPage : Activity() {
             muteSound()
             mSpeechRecognizer!!.startListening(mSpeechRecognizerIntent)
 
+            ripple_animation_startpage_activit.visibility = View.VISIBLE
 
         }, 2000)
     }
@@ -169,11 +199,22 @@ class StartPage : Activity() {
 
         override fun onPostExecute(result: Void?) {
             Log.d("test_async", "on post execute called")
+            progressbar_startpage_activity.foregroundStrokeWidth = 10f
             start_textview_startpage_activity.visibility = View.VISIBLE
+            ripple_animation_startpage_activit.visibility = View.INVISIBLE
+
+            if (best_result_textview_startpage_activity.text.toString().toInt() < current_result_textview_startpage_activity.text.toString().toInt()) {
+                val editor = sharedPreferences?.edit()
+                editor?.putInt(getString(R.string.bestResultKey), current_result_textview_startpage_activity.text.toString().toInt())
+                editor?.apply()
+                best_result_textview_startpage_activity.text = current_result_textview_startpage_activity.text
+            }
+
             super.onPostExecute(result)
         }
         override fun onPreExecute() {
             Log.d("test_async", "on pre execute called")
+            progressbar_startpage_activity.foregroundStrokeWidth = 400f
             super.onPreExecute()
         }
 
@@ -185,6 +226,8 @@ class StartPage : Activity() {
                 curIndex++
                 currentResult = ""
                 Log.d("test_async", "contains")
+
+                ripple_animation_startpage_activit.visibility = View.INVISIBLE
 
                 current_word_textview_startpage_activity.text = wordsList!![curIndex]
                 mSpeechRecognizer?.stopListening()
@@ -202,6 +245,8 @@ class StartPage : Activity() {
                     nextWordFlag = true
 
                     current_result_textview_startpage_activity.text = (curIndex + 1).toString()
+
+                    ripple_animation_startpage_activit.visibility = View.VISIBLE
 
                 }, 2000)
             }
@@ -238,6 +283,11 @@ class StartPage : Activity() {
         fun setTrainingFlag(tf: Boolean) {
             this.training = tf
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        ripple_animation_startpage_activit.stopRippleAnimation()
     }
 
     private  fun muteSound(){

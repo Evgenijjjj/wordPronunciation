@@ -33,6 +33,26 @@
 
     </LinearLayout>
 
+    <com.skyfishjy.library.RippleBackground
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:layout_gravity="center"
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            android:id="@+id/ripple_animation_startpage_activit"
+            app:rb_color="@color/originalRed"
+            app:rb_radius="12dp"
+            app:rb_rippleAmount="10"
+            app:rb_duration="2000"
+            app:rb_scale="12">
+        <ImageView
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:layout_centerInParent="true"
+                android:id="@+id/center_ripple_photo_background_register"
+                android:src="@drawable/black_circle"/>
+    </com.skyfishjy.library.RippleBackground>
+
     <com.budiyev.android.circularprogressbar.CircularProgressBar
             android:id="@+id/progressbar_startpage_activity"
             android:layout_gravity="center"
