@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
-import android.graphics.Color
 import android.media.AudioManager
 import android.os.AsyncTask
 import android.os.Bundle
@@ -20,8 +19,12 @@ import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.util.Log
 import android.view.View
-import android.widget.TextView
 import android.widget.Toast
+import com.example.admin.wordpronucation.retrofit.MyApi
+import com.example.admin.wordpronucation.retrofit.WordRetrofitClient
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_start_page.*
 import java.util.*
 
@@ -36,8 +39,11 @@ class StartPage : Activity() {
     private var currentResult: String = ""
     private var wordsList: MutableList<String>? = null
 
-    private var progressBarAsyncTask: ProgressBarAsyncTask? = null
+    private var progressBarAsyncTask: TrainingAsyncTask? = null
     private var curIndex = 0
+
+    private lateinit var jsonApi: MyApi
+    private lateinit var compositeDisposable: CompositeDisposable
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,53 +56,11 @@ class StartPage : Activity() {
             checkPermissions()
 
         mAudioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
-
         sharedPreferences = getPreferences(Context.MODE_PRIVATE)
-        var bestRes = sharedPreferences?.getInt(getString(R.string.bestResultKey), -1)
-
-        if (bestRes == -1) {
-            val editor = sharedPreferences?.edit()
-            editor?.putInt(getString(R.string.bestResultKey), 0)
-            editor?.apply()
-            bestRes = 0
-        }
-
-        best_result_textview_startpage_activity.text = bestRes.toString()
+        setBestResToView()
 
         wordsList = mutableListOf()
-
-        wordsList?.add("example")
-        wordsList?.add("car")
-        wordsList?.add("flat")
-        wordsList?.add("training")
-        wordsList?.add("phone")
-        wordsList?.add("circle")
-        wordsList?.add("rectangle")
-        wordsList?.add("london")
-        wordsList?.add("russia")
-        wordsList?.add("book")
-        wordsList?.add("school")
-        wordsList?.add("children")
-        wordsList?.add("phone")
-        wordsList?.add("request")
-        wordsList?.add("remain")
-        wordsList?.add("relax")
-        wordsList?.add("vegetable")
-        wordsList?.add("wood")
-        wordsList?.add("workshop")
-        wordsList?.add("young")
-        wordsList?.add("yesterday")
-        wordsList?.add("zone")
-        wordsList?.add("version")
-        wordsList?.add("use")
-        wordsList?.add("unknown")
-        wordsList?.add("universal")
-        wordsList?.add("ugly")
-        wordsList?.add("true")
-        wordsList?.add("transformation")
-        wordsList?.add("sweet")
-        wordsList?.add("support")
-
+        fetchWords()
 
         mTextToSpeech = TextToSpeech(this, TextToSpeech.OnInitListener {
             if (it != TextToSpeech.ERROR) {
@@ -141,8 +105,6 @@ class StartPage : Activity() {
         mSpeechRecognizerIntent!!.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "en_US")
 
         start_textview_startpage_activity.setOnClickListener {
-            if (progressBarAsyncTask != null) progressBarAsyncTask?.setTrainingFlag(false)
-
             it.visibility = View.INVISIBLE
             enterTraining()
         }
@@ -161,14 +123,14 @@ class StartPage : Activity() {
 
         val handler = Handler()
         handler.postDelayed({
-            progressBarAsyncTask =  ProgressBarAsyncTask()
+            progressBarAsyncTask =  TrainingAsyncTask()
             progressBarAsyncTask!!.execute()
             muteSound()
             mSpeechRecognizer!!.startListening(mSpeechRecognizerIntent)
 
             ripple_animation_startpage_activit.visibility = View.VISIBLE
 
-        }, 2000)
+        }, 1200)
     }
 
     inner class SpeechRecognitionListener: RecognitionListener {
@@ -199,6 +161,8 @@ class StartPage : Activity() {
         val permissions = ArrayList<String>()
         permissions.add(Manifest.permission.INTERNET)
         permissions.add(Manifest.permission.RECORD_AUDIO)
+        permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        permissions.add(Manifest.permission.READ_EXTERNAL_STORAGE)
         var result: Int
         val listPermissionsNeeded = ArrayList<String>()
         for (p in permissions) {
@@ -214,7 +178,7 @@ class StartPage : Activity() {
         return true
     }
 
-    private inner class ProgressBarAsyncTask: AsyncTask<Int,Int,Void>() {
+    private inner class TrainingAsyncTask: AsyncTask<Int,Int,Void>() {
         private var training = true
 
         private var containsFlag = false
@@ -224,12 +188,14 @@ class StartPage : Activity() {
 
         override fun onPostExecute(result: Void?) {
             Log.d("test_async", "on post execute called")
-            progressbar_startpage_activity.foregroundStrokeWidth = 10f
+            progressbar_startpage_activity.foregroundStrokeWidth = 5f
             start_textview_startpage_activity.visibility = View.VISIBLE
             ripple_animation_startpage_activit.visibility = View.INVISIBLE
 
+            Log.d("test_retrofit", wordsList?.size.toString())
+
             start_textview_startpage_activity.text = "Tap to restart"
-            Toast.makeText(this@StartPage, "Wrong !\nYou say: $currentResult", Toast.LENGTH_LONG).show()
+            Toast.makeText(this@StartPage, "Wrong !", Toast.LENGTH_LONG).show()
 
             super.onPostExecute(result)
         }
@@ -278,7 +244,7 @@ class StartPage : Activity() {
                     publishProgress(i)
 
                     try {
-                        Thread.sleep(4 * 10)
+                        Thread.sleep(2 * 10)
                     } catch (e: Exception) {}
 
                 }
@@ -301,36 +267,22 @@ class StartPage : Activity() {
                     Log.d("test_async", "CONTATINS: ${currentResult}")
 
                     containsFlag = false
+                    nextWordFlag = true
+
                     curIndex++
                     currentResult = ""
 
-                    nextWordFlag = true
-
                     publishProgress(100)
-
-
 
                     for (i in 0..50) {
                         try {
                             Thread.sleep(2 * 10)
                         } catch (e: Exception) {}
                     }
-
-
                 }
                 else {
                     training = false
                 }
-
-
-                /*Log.d("test_async", "loopIndex: $loopIndex, curIndex: $curIndex")
-                if (!breakFlag) {
-                    if (loopIndex < curIndex) {
-                        loopIndex++; Log.d("test_async", "dont finish loop"); breakFlag = true
-                    } else {
-                        training = false; Log.d("test_async", "finish loop")
-                    }
-                } else breakFlag = false*/
             }
 
             return null
@@ -345,10 +297,6 @@ class StartPage : Activity() {
             }
 
 
-        }
-
-        fun setTrainingFlag(tf: Boolean) {
-            this.training = tf
         }
     }
 
@@ -372,5 +320,30 @@ class StartPage : Activity() {
         amanager.setStreamMute(AudioManager.STREAM_MUSIC, false)
         amanager.setStreamMute(AudioManager.STREAM_RING, false)
         amanager.setStreamMute(AudioManager.STREAM_SYSTEM, false)
+    }
+
+    private fun setBestResToView() {
+        var bestRes = sharedPreferences?.getInt(getString(R.string.bestResultKey), -1)
+
+        if (bestRes == -1) {
+            val editor = sharedPreferences?.edit()
+            editor?.putInt(getString(R.string.bestResultKey), 0)
+            editor?.apply()
+            bestRes = 0
+        }
+
+        best_result_textview_startpage_activity.text = bestRes.toString()
+    }
+
+    private fun fetchWords() {
+        val retrofit = WordRetrofitClient.instance
+        jsonApi = retrofit.create(MyApi::class.java)
+        compositeDisposable = CompositeDisposable()
+
+        compositeDisposable.add(jsonApi.words
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe{words->for(w in words) if (!w.word.contains("[0-9]")) wordsList?.add(w.word)}
+        )
     }
 }
