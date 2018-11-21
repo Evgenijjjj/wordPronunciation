@@ -25,7 +25,6 @@
                 android:layout_marginLeft="15dp"
                 android:layout_gravity="center_vertical"
                 android:textColor="@android:color/white"
-                android:text="example"
                 android:textSize="22dp"
                 android:id="@+id/current_word_textview_startpage_activity"
                 android:layout_width="wrap_content"
