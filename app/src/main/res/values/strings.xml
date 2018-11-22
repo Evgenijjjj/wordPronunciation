@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">Word Pronucation</string>
     <string name="bestResultKey">best_result</string>
+    <string name="keyWordKey">key_word</string>
+    <string name="timeLimitKey">time_limit</string>
+    <string name="sharedPrefName">mySP</string>
+
+    <string name="getWordsWithThemeUrl">words?rel_jjb=</string>
 </resources>

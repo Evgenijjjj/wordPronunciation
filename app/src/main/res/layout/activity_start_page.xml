@@ -8,29 +8,65 @@
         tools:context=".StartPage"
         android:background="@android:color/black">
 
-    <LinearLayout
+    <FrameLayout
             android:layout_gravity="top"
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="10dp">
 
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Topic :"
+                android:textStyle="bold"
+                android:textSize="25dp"
+                android:layout_gravity="center_vertical"
+                android:textColor="@color/originalRed"/>
+
+        <TextView
+                android:id="@+id/topic_textview_startpage_activity"
+                android:text="theme"
+                android:layout_gravity="center_vertical"
+                android:textColor="@android:color/white"
+                android:textSize="22dp"
+                android:textStyle="bold"
+                android:layout_marginLeft="82dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+        <ImageView
+                android:id="@+id/settings_btn_startpage_activity"
+                android:layout_gravity="center_vertical|right"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/gear"/>
+
+    </FrameLayout>
+
+    <FrameLayout
+            android:visibility="invisible"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="60dp"
+            android:layout_gravity="center_horizontal"
+            android:id="@+id/current_word_framelayout_startpage_activity">
+
         <ImageView
                 android:layout_gravity="center_vertical"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:src = "@drawable/speaker"/>
-
         <TextView
-                android:layout_marginLeft="15dp"
+                android:layout_marginLeft="50dp"
+                android:text="currentWord"
                 android:layout_gravity="center_vertical"
                 android:textColor="@android:color/white"
                 android:textSize="22dp"
                 android:id="@+id/current_word_textview_startpage_activity"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
-
-    </LinearLayout>
+    </FrameLayout>
 
     <com.skyfishjy.library.RippleBackground
             xmlns:android="http://schemas.android.com/apk/res/android"

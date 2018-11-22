@@ -25,10 +25,13 @@ import com.example.admin.wordpronucation.retrofit.WordRetrofitClient
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.main.activity_settings.*
 import kotlinx.android.synthetic.main.activity_start_page.*
+import retrofit2.http.Url
 import java.util.*
 
 class StartPage : Activity() {
+
     private var mTextToSpeech: TextToSpeech? = null
     private var mSpeechRecognizer: SpeechRecognizer? = null
     private var mSpeechRecognizerIntent: Intent? = null
@@ -56,11 +59,11 @@ class StartPage : Activity() {
             checkPermissions()
 
         mAudioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
-        sharedPreferences = getPreferences(Context.MODE_PRIVATE)
+        sharedPreferences = getSharedPreferences(getString(R.string.sharedPrefName), Context.MODE_PRIVATE)
+
         setBestResToView()
 
         wordsList = mutableListOf()
-        fetchWords()
 
         mTextToSpeech = TextToSpeech(this, TextToSpeech.OnInitListener {
             if (it != TextToSpeech.ERROR) {
@@ -105,14 +108,24 @@ class StartPage : Activity() {
         mSpeechRecognizerIntent!!.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "en_US")
 
         start_textview_startpage_activity.setOnClickListener {
-            it.visibility = View.INVISIBLE
             enterTraining()
+        }
+
+        settings_btn_startpage_activity.setOnClickListener {
+            startActivity(Intent(this, Settings::class.java))
         }
     }
 
     private fun enterTraining() {
         wordsList?.shuffle()
 
+        if (wordsList!!.isEmpty()) {
+            Toast.makeText(this, "Ethernet error\nPleas turn on ethernet", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        start_textview_startpage_activity.visibility = View.INVISIBLE
+        current_word_framelayout_startpage_activity.visibility = View.VISIBLE
         current_result_textview_startpage_activity.text = "0"
 
         curIndex = 0
@@ -193,6 +206,7 @@ class StartPage : Activity() {
             ripple_animation_startpage_activit.visibility = View.INVISIBLE
 
             Log.d("test_retrofit", wordsList?.size.toString())
+            current_word_framelayout_startpage_activity.visibility = View.INVISIBLE
 
             start_textview_startpage_activity.text = "Tap to restart"
             Toast.makeText(this@StartPage, "Wrong !", Toast.LENGTH_LONG).show()
@@ -202,6 +216,8 @@ class StartPage : Activity() {
         override fun onPreExecute() {
             Log.d("test_async", "on pre execute called")
             progressbar_startpage_activity.foregroundStrokeWidth = 400f
+
+            current_word_framelayout_startpage_activity.visibility = View.VISIBLE
             super.onPreExecute()
         }
 
@@ -300,6 +316,15 @@ class StartPage : Activity() {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+
+        val topic = sharedPreferences?.getString(getString(R.string.keyWordKey), "education")
+        topic_textview_startpage_activity.text = topic
+
+        fetchWords()
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         ripple_animation_startpage_activit.stopRippleAnimation()
@@ -336,11 +361,16 @@ class StartPage : Activity() {
     }
 
     private fun fetchWords() {
+        var keyWord = sharedPreferences?.getString(getString(R.string.keyWordKey), "")
+        if (keyWord.isNullOrEmpty()) {keyWord = "education"}
+
+        Log.d("test_async", "keyWord = $keyWord")
+
         val retrofit = WordRetrofitClient.instance
         jsonApi = retrofit.create(MyApi::class.java)
         compositeDisposable = CompositeDisposable()
 
-        compositeDisposable.add(jsonApi.words
+        compositeDisposable.add(jsonApi.getWordsForTheme(getString(R.string.getWordsWithThemeUrl) + keyWord)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe{words->for(w in words) if (!w.word.contains("[0-9]")) wordsList?.add(w.word)}
