@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Word Pronucation</string>
+    <string name="topic">Topic :</string>
+    <string name="startBtnText">Tap to start</string>
+    <string name="restartBtnText">Tap to restart</string>
+    <string name="best">Best</string>
+    <string name="current">Current</string>
+    <string name="timeLimitInSec">Time limit in sec :</string>
+    <string name="save">SAVE</string>
+    <string name="changeLanguage">Change Language</string>
+</resources>

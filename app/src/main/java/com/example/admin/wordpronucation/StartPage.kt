@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.media.AudioManager
 import android.os.AsyncTask
 import android.os.Bundle
@@ -17,6 +18,7 @@ import android.speech.tts.TextToSpeech
 import android.speech.tts.UtteranceProgressListener
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
+import android.support.v7.app.AlertDialog
 import android.util.Log
 import android.view.View
 import android.widget.Toast
@@ -25,9 +27,7 @@ import com.example.admin.wordpronucation.retrofit.WordRetrofitClient
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.activity_settings.*
 import kotlinx.android.synthetic.main.activity_start_page.*
-import retrofit2.http.Url
 import java.util.*
 
 class StartPage : Activity() {
@@ -50,6 +50,9 @@ class StartPage : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        sharedPreferences = getSharedPreferences(getString(R.string.sharedPrefName), Context.MODE_PRIVATE)
+
         setContentView(R.layout.activity_start_page)
 
         ripple_animation_startpage_activit.startRippleAnimation()
@@ -59,10 +62,8 @@ class StartPage : Activity() {
             checkPermissions()
 
         mAudioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
-        sharedPreferences = getSharedPreferences(getString(R.string.sharedPrefName), Context.MODE_PRIVATE)
 
         setBestResToView()
-
         wordsList = mutableListOf()
 
         mTextToSpeech = TextToSpeech(this, TextToSpeech.OnInitListener {
@@ -208,7 +209,7 @@ class StartPage : Activity() {
             Log.d("test_retrofit", wordsList?.size.toString())
             current_word_framelayout_startpage_activity.visibility = View.INVISIBLE
 
-            start_textview_startpage_activity.text = "Tap to restart"
+            start_textview_startpage_activity.text = getString(R.string.restartBtnText)
             Toast.makeText(this@StartPage, "Wrong !", Toast.LENGTH_LONG).show()
 
             super.onPostExecute(result)
@@ -321,7 +322,7 @@ class StartPage : Activity() {
 
     override fun onStart() {
         super.onStart()
-
+        loadLocale()
         val topic = sharedPreferences?.getString(getString(R.string.keyWordKey), "education")
         topic_textview_startpage_activity.text = topic
 
@@ -363,7 +364,49 @@ class StartPage : Activity() {
         best_result_textview_startpage_activity.text = bestRes.toString()
     }
 
+    private fun showChangeLanguageDialog() {
+        val langList: Array<String> = arrayOf("English", "Русский")
+        val alertDialog = AlertDialog.Builder(this@StartPage, R.style.MyDialogTheme)
+        alertDialog.setTitle("Choose language...")
+
+        alertDialog.setSingleChoiceItems(langList, -1) { dialog, whichButton ->
+            when (whichButton) {
+                0 -> {setLocale("en"); recreate() }
+                1 -> {setLocale("ru"); recreate() }
+            }
+            dialog.dismiss()
+        }
+
+        val dialog = alertDialog.create()
+        dialog.show()
+    }
+
+    private fun setLocale(lang: String) {
+        val locale = Locale(lang)
+        val config = this.resources.configuration
+
+        Locale.setDefault(locale)
+        config.setLocale(locale)
+        resources.updateConfiguration(config, resources.displayMetrics)
+
+        val editor = sharedPreferences?.edit()
+        editor?.putString(getString(R.string.languageSP), lang)
+        editor?.apply()
+    }
+
+    private fun loadLocale() {
+        val lang = sharedPreferences?.getString(getString(R.string.languageSP), "")
+        if (lang.isNullOrEmpty()) {
+            showChangeLanguageDialog()
+            return
+        }
+        Log.d("cdsvsdvs", "setlocale: $lang")
+        setLocale(lang!!)
+
+    }
+
     private fun fetchWords() {
+        wordsList?.clear()
         var keyWord = sharedPreferences?.getString(getString(R.string.keyWordKey), "")
         if (keyWord.isNullOrEmpty()) {keyWord = "education"}
 

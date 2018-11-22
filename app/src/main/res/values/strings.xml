@@ -1,10 +1,21 @@
 <resources>
     <string name="app_name">Word Pronucation</string>
-    <string name="bestResultKey">best_result</string>
-    <string name="keyWordKey">key_word</string>
-    <string name="timeLimitKey">time_limit</string>
-    <string name="sharedPrefName">mySP</string>
+    <string name="bestResultKey" translatable="false">best_result</string>
+    <string name="keyWordKey" translatable="false">key_word</string>
+    <string name="timeLimitKey" translatable="false">time_limit</string>
+    <string name="sharedPrefName" translatable="false">mySP</string>
 
-    <string name="getWordsWithThemeUrl">words?rel_jjb=</string>
-    <string name="getWordsFromPhraseUrl">words?ml=</string>
+    <string name="getWordsWithThemeUrl" translatable="false">words?rel_jjb=</string>
+    <string name="getWordsFromPhraseUrl" translatable="false">words?ml=</string>
+    <string name="languageSP" translatable="false">language</string>
+
+
+    <string name="topic">Topic :</string>
+    <string name="startBtnText">Tap to start</string>
+    <string name="restartBtnText">Tap to restart</string>
+    <string name="best">Best</string>
+    <string name="current">Current</string>
+    <string name="timeLimitInSec">Time limit in sec :</string>
+    <string name="save">SAVE</string>
+    <string name="changeLanguage">Change Language</string>
 </resources>

@@ -3,7 +3,9 @@ package com.example.admin.wordpronucation
 import android.app.Activity
 import android.content.Context
 import android.content.SharedPreferences
+import android.content.res.Configuration
 import android.os.Bundle
+import android.support.v7.app.AlertDialog
 import android.widget.Toast
 import com.example.admin.wordpronucation.retrofit.MyApi
 import com.example.admin.wordpronucation.retrofit.WordRetrofitClient
@@ -11,6 +13,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_settings.*
+import java.util.*
 
 class Settings: Activity() {
 
@@ -21,6 +24,10 @@ class Settings: Activity() {
         setContentView(R.layout.activity_settings)
 
         sharedPreferences = getSharedPreferences(getString(R.string.sharedPrefName), Context.MODE_PRIVATE)
+
+        change_language_layout_settings.setOnClickListener {
+            showChangeLanguageDialog()
+        }
 
         val topic = sharedPreferences?.getString(getString(R.string.keyWordKey), "")
         val timeLimit = sharedPreferences?.getInt(getString(R.string.timeLimitKey), -1)
@@ -71,6 +78,35 @@ class Settings: Activity() {
                 }
             )
         }
+    }
+
+    private fun showChangeLanguageDialog() {
+        val langList: Array<String> = arrayOf("English", "Русский")
+        val alertDialog = AlertDialog.Builder(this, R.style.MyDialogTheme)
+        alertDialog.setTitle("Choose language...")
+
+        alertDialog.setSingleChoiceItems(langList, -1) { dialog, whichButton ->
+            when (whichButton) {
+                0 -> {setLocale("en"); recreate() }
+                1 -> {setLocale("ru"); recreate() }
+            }
+            dialog.dismiss()
+        }
+
+        val dialog = alertDialog.create()
+        dialog.show()
+    }
+
+    private fun setLocale(lang: String) {
+        val locale = Locale(lang)
+        val config = Configuration()
+        config.setLocale(locale)
+        resources.updateConfiguration(config, resources.displayMetrics)
+
+        val editor = sharedPreferences?.edit()
+        editor?.putString(getString(R.string.languageSP), lang)
+        editor?.apply()
+        finish()
     }
 
 }

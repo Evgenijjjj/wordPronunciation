@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Тренировка Произношения</string>
+    <string name="topic">Тема :</string>
+    <string name="startBtnText">Начать</string>
+    <string name="restartBtnText">Повторить</string>
+    <string name="best">Лучший</string>
+    <string name="current">Текущий</string>
+    <string name="timeLimitInSec">Время таймера (сек) :</string>
+    <string name="save">СОХРАНИТЬ</string>
+    <string name="changeLanguage">Изменить Язык</string>
+</resources>

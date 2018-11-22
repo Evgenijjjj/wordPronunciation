@@ -4,66 +4,108 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:padding="10dp">
+        android:padding="10dp"
+        >
 
-    <LinearLayout
+    <ImageView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_gravity="top"
-            android:focusableInTouchMode="true">
+            android:layout_height="match_parent"
+            android:src="@drawable/gear"
+            android:alpha="0.2"
+    />
 
-        <TextView
-                android:textSize="22dp"
-                android:textStyle="bold"
-                android:textColor="@color/originalRed"
-                android:text="Topic :"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-        <EditText
-                android:id="@+id/topic_edittext_settings"
-                android:textSize="22dp"
-                android:hint="Type topic word"
-                android:textStyle="bold"
-                android:textColor="@android:color/white"
-                android:background="@android:color/transparent"
-                android:layout_marginLeft="10dp"
+    <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="40dp">
+
+        <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:maxLines="1"
-                android:inputType="textAutoCorrect"/>
+                android:orientation="horizontal"
+                android:layout_gravity="top"
+                android:focusableInTouchMode="true">
 
-    </LinearLayout>
+            <TextView
+                    android:textSize="20dp"
+                    android:textStyle="bold"
+                    android:textColor="@color/originalRed"
+                    android:text="@string/topic"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            <EditText
+                    android:id="@+id/topic_edittext_settings"
+                    android:textSize="18dp"
+                    android:hint="Type topic word"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/white"
+                    android:background="@android:color/transparent"
+                    android:layout_marginLeft="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:inputType="textAutoCorrect"/>
 
-    <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_gravity="top"
-            android:focusableInTouchMode="true"
-            android:layout_marginTop="40dp">
+        </LinearLayout>
 
-        <TextView
-                android:textSize="22dp"
-                android:textStyle="bold"
-                android:textColor="@color/originalRed"
-                android:text="Time limit in sec :"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-        <EditText
-                android:id="@+id/time_limit_edittext_settings"
-                android:textSize="22dp"
-                android:hint="Enter time"
-                android:textStyle="bold"
-                android:textColor="@android:color/white"
-                android:background="@android:color/transparent"
-                android:layout_marginLeft="10dp"
+        <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:maxLines="1"
-                android:inputType="number"/>
+                android:orientation="horizontal"
+                android:layout_gravity="top"
+                android:focusableInTouchMode="true"
+                android:layout_marginTop="40dp">
 
-    </LinearLayout>
+            <TextView
+                    android:textSize="20dp"
+                    android:textStyle="bold"
+                    android:textColor="@color/originalRed"
+                    android:text="@string/timeLimitInSec"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            <EditText
+                    android:id="@+id/time_limit_edittext_settings"
+                    android:textSize="18dp"
+                    android:hint="Enter time"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/white"
+                    android:background="@android:color/transparent"
+                    android:layout_marginLeft="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:inputType="number"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+                android:id="@+id/change_language_layout_settings"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="100dp"
+                android:orientation="horizontal"
+                android:layout_gravity="center_horizontal">
+
+            <ImageView
+                    android:layout_gravity="center_vertical|right"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:src="@drawable/worlwide"/>
+            <TextView
+                    android:layout_marginLeft="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="20dp"
+                    android:textStyle="bold"
+                    android:textColor="@color/originalRed"
+                    android:text="@string/changeLanguage"
+            />
+
+        </LinearLayout>
+
+    </FrameLayout>
+
 
     <TextView
             android:id="@+id/save_settings"
@@ -73,8 +115,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
-            android:textSize="30dp"
+            android:textSize="25dp"
             android:textStyle="bold"
-            android:text="SAVE"/>
+            android:text="@string/save"/>
 
 </FrameLayout>
