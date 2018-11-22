@@ -193,10 +193,10 @@ class StartPage : Activity() {
 
     private inner class TrainingAsyncTask: AsyncTask<Int,Int,Void>() {
         private var training = true
-
         private var containsFlag = false
-
         private var nextWordFlag = false
+
+        private var timeLimit = 2
 
 
         override fun onPostExecute(result: Void?) {
@@ -216,8 +216,11 @@ class StartPage : Activity() {
         override fun onPreExecute() {
             Log.d("test_async", "on pre execute called")
             progressbar_startpage_activity.foregroundStrokeWidth = 400f
-
             current_word_framelayout_startpage_activity.visibility = View.VISIBLE
+
+            val time = sharedPreferences?.getInt(getString(R.string.timeLimitKey), -1)
+            timeLimit = if (time == -1) 2 else time!!
+
             super.onPreExecute()
         }
 
@@ -260,7 +263,7 @@ class StartPage : Activity() {
                     publishProgress(i)
 
                     try {
-                        Thread.sleep(2 * 10)
+                        Thread.sleep(timeLimit.toLong() * 10)
                     } catch (e: Exception) {}
 
                 }
@@ -370,7 +373,7 @@ class StartPage : Activity() {
         jsonApi = retrofit.create(MyApi::class.java)
         compositeDisposable = CompositeDisposable()
 
-        compositeDisposable.add(jsonApi.getWordsForTheme(getString(R.string.getWordsWithThemeUrl) + keyWord)
+        compositeDisposable.add(jsonApi.getWordsForTheme(getString(R.string.getWordsFromPhraseUrl) + keyWord)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe{words->for(w in words) if (!w.word.contains("[0-9]")) wordsList?.add(w.word)}

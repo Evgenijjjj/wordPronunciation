@@ -23,6 +23,10 @@ class Settings: Activity() {
         sharedPreferences = getSharedPreferences(getString(R.string.sharedPrefName), Context.MODE_PRIVATE)
 
         val topic = sharedPreferences?.getString(getString(R.string.keyWordKey), "")
+        val timeLimit = sharedPreferences?.getInt(getString(R.string.timeLimitKey), -1)
+
+        if (timeLimit == -1) time_limit_edittext_settings.setText("2")
+        else time_limit_edittext_settings.setText(timeLimit.toString())
 
         if (!topic.isNullOrEmpty()) topic_edittext_settings.setText(topic)
 
@@ -30,7 +34,7 @@ class Settings: Activity() {
             val jsonApi = WordRetrofitClient.instance.create(MyApi::class.java)
 
             CompositeDisposable().add(jsonApi.getWordsForTheme(
-                getString(R.string.getWordsWithThemeUrl) +
+                getString(R.string.getWordsFromPhraseUrl) +
                         topic_edittext_settings.text.toString() + "&max=5")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -41,6 +45,23 @@ class Settings: Activity() {
                         return@subscribe
                     }
                     else {
+                        try {
+                            val time = time_limit_edittext_settings.text.toString().toInt()
+                            if (time in 2..5) {
+                                val editor = sharedPreferences?.edit()
+                                editor?.putInt(getString(R.string.timeLimitKey), time)
+                                editor?.apply()
+                            }
+                            else {
+                                Toast.makeText(this, "Wrong Time Limit!\n max = 5, min = 2", Toast.LENGTH_LONG).show()
+                                return@subscribe
+                            }
+                        } catch (e: Exception) {
+                            Toast.makeText(this, "Wrong Time Limit!", Toast.LENGTH_LONG).show()
+                            return@subscribe
+                        }
+
+
                         Toast.makeText(this, "Right Topic!", Toast.LENGTH_LONG).show()
                         val editor = sharedPreferences?.edit()
                         editor?.putString(getString(R.string.keyWordKey), topic_edittext_settings.text.toString())

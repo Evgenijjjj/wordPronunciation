@@ -6,4 +6,5 @@
     <string name="sharedPrefName">mySP</string>
 
     <string name="getWordsWithThemeUrl">words?rel_jjb=</string>
+    <string name="getWordsFromPhraseUrl">words?ml=</string>
 </resources>
