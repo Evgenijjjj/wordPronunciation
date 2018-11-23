@@ -37,7 +37,7 @@
             <EditText
                     android:id="@+id/topic_edittext_settings"
                     android:textSize="18dp"
-                    android:hint="Type topic word"
+                    android:hint="@string/topicHint"
                     android:textStyle="bold"
                     android:textColor="@android:color/white"
                     android:background="@android:color/transparent"
@@ -67,7 +67,7 @@
             <EditText
                     android:id="@+id/time_limit_edittext_settings"
                     android:textSize="18dp"
-                    android:hint="Enter time"
+                    android:hint="@string/timeHint"
                     android:textStyle="bold"
                     android:textColor="@android:color/white"
                     android:background="@android:color/transparent"

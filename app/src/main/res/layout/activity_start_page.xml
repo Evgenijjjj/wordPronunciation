@@ -47,25 +47,57 @@
     <FrameLayout
             android:visibility="invisible"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="80dp"
             android:layout_marginTop="60dp"
             android:layout_gravity="center_horizontal"
             android:id="@+id/current_word_framelayout_startpage_activity">
 
-        <ImageView
-                android:layout_gravity="center_vertical"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:src = "@drawable/speaker"/>
-        <TextView
-                android:layout_marginLeft="50dp"
-                android:text="currentWord"
-                android:layout_gravity="center_vertical"
-                android:textColor="@android:color/white"
-                android:textSize="22dp"
-                android:id="@+id/current_word_textview_startpage_activity"
+        <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_gravity="center_horizontal">
+
+            <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src = "@drawable/speaker"/>
+            <TextView
+                    android:layout_marginLeft="5dp"
+                    android:text="currentWord"
+                    android:layout_gravity="center_vertical"
+                    android:textColor="@android:color/white"
+                    android:textSize="22dp"
+                    android:id="@+id/current_word_textview_startpage_activity"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="45dp"
+                android:orientation="horizontal"
+                android:layout_gravity="center_horizontal">
+
+            <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src = "@drawable/translate"
+                    android:layout_gravity="center_vertical"/>
+            <TextView
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="5dp"
+                    android:text="currentWord"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="18dp"
+                    android:id="@+id/current_translated_word_textview_startpage_activity"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
     </FrameLayout>
 
     <com.skyfishjy.library.RippleBackground

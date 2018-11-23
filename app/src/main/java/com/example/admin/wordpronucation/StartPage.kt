@@ -22,7 +22,9 @@ import android.support.v7.app.AlertDialog
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import com.example.admin.wordpronucation.models.WordPair
 import com.example.admin.wordpronucation.retrofit.MyApi
+import com.example.admin.wordpronucation.retrofit.TranslatorRetrofitClient
 import com.example.admin.wordpronucation.retrofit.WordRetrofitClient
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -41,6 +43,8 @@ class StartPage : Activity() {
 
     private var currentResult: String = ""
     private var wordsList: MutableList<String>? = null
+
+    private var wordsPairsList: MutableList<WordPair>? = null
 
     private var progressBarAsyncTask: TrainingAsyncTask? = null
     private var curIndex = 0
@@ -65,6 +69,7 @@ class StartPage : Activity() {
 
         setBestResToView()
         wordsList = mutableListOf()
+        wordsPairsList = mutableListOf()
 
         mTextToSpeech = TextToSpeech(this, TextToSpeech.OnInitListener {
             if (it != TextToSpeech.ERROR) {
@@ -118,9 +123,9 @@ class StartPage : Activity() {
     }
 
     private fun enterTraining() {
-        wordsList?.shuffle()
+        wordsPairsList?.shuffle()
 
-        if (wordsList!!.isEmpty()) {
+        if (wordsPairsList!!.isEmpty()) {
             Toast.makeText(this, "Ethernet error\nPleas turn on ethernet", Toast.LENGTH_SHORT).show()
             return
         }
@@ -130,10 +135,11 @@ class StartPage : Activity() {
         current_result_textview_startpage_activity.text = "0"
 
         curIndex = 0
-        current_word_textview_startpage_activity.text = wordsList!![curIndex]
+        current_word_textview_startpage_activity.text = wordsPairsList!![curIndex].originalWord
+        current_translated_word_textview_startpage_activity.text = wordsPairsList!![curIndex].translatedWord
 
         unMuteSound()
-        mTextToSpeech!!.speak(wordsList!![curIndex], TextToSpeech.QUEUE_FLUSH, null)
+        mTextToSpeech!!.speak(wordsPairsList!![curIndex].originalWord, TextToSpeech.QUEUE_FLUSH, null)
 
         val handler = Handler()
         handler.postDelayed({
@@ -230,10 +236,12 @@ class StartPage : Activity() {
 
             if (nextWordFlag) {
                 ripple_animation_startpage_activit.visibility = View.INVISIBLE
-                current_word_textview_startpage_activity.text = wordsList!![curIndex]
+                current_word_textview_startpage_activity.text = wordsPairsList!![curIndex].originalWord
+                current_translated_word_textview_startpage_activity.text = wordsPairsList!![curIndex].translatedWord
+
                 mSpeechRecognizer?.stopListening()
                 unMuteSound()
-                mTextToSpeech!!.speak(wordsList!![curIndex], TextToSpeech.QUEUE_FLUSH, null)
+                mTextToSpeech!!.speak(wordsPairsList!![curIndex].originalWord, TextToSpeech.QUEUE_FLUSH, null)
 
                 Handler().postDelayed({
                     muteSound()
@@ -252,7 +260,7 @@ class StartPage : Activity() {
             }
 
 
-            if (currentResult.toLowerCase().contains(wordsList!![curIndex].toLowerCase())) {
+            if (currentResult.toLowerCase().contains(wordsPairsList!![curIndex].originalWord.toLowerCase())) {
                 containsFlag = true
 
             }
@@ -326,7 +334,7 @@ class StartPage : Activity() {
         val topic = sharedPreferences?.getString(getString(R.string.keyWordKey), "education")
         topic_textview_startpage_activity.text = topic
 
-        fetchWords()
+        updateWords()
     }
 
     override fun onDestroy() {
@@ -405,21 +413,44 @@ class StartPage : Activity() {
 
     }
 
-    private fun fetchWords() {
-        wordsList?.clear()
-        var keyWord = sharedPreferences?.getString(getString(R.string.keyWordKey), "")
-        if (keyWord.isNullOrEmpty()) {keyWord = "education"}
+    private fun fillWordsPairsList() {
+        val jsonApi = TranslatorRetrofitClient.instance.create(MyApi::class.java)
 
+        for (word in wordsList!!) {
+            CompositeDisposable().add(jsonApi.getTranslation("translate?key=" + getString(R.string.translatorApiKey) +
+                    "&text=" + word + "&lang=" + "en-ru")
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe { result -> wordsPairsList?.add(WordPair(word, result.text[0]))}
+            )
+        }
+    }
+
+    private fun fetchWords(keyWord: String) {
+        wordsList?.clear()
         Log.d("test_async", "keyWord = $keyWord")
 
         val retrofit = WordRetrofitClient.instance
         jsonApi = retrofit.create(MyApi::class.java)
         compositeDisposable = CompositeDisposable()
 
-        compositeDisposable.add(jsonApi.getWordsForTheme(getString(R.string.getWordsFromPhraseUrl) + keyWord)
+        compositeDisposable.add(
+            jsonApi.getWordsForTheme(getString(R.string.getWordsFromPhraseUrl) + keyWord)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe { words -> for (w in words) if (!w.word.contains("[0-9]")) wordsList?.add(w.word); fillWordsPairsList() }
+        )
+    }
+
+    private fun updateWords(){
+        val jsonApi = TranslatorRetrofitClient.instance.create(MyApi::class.java)
+        val text = sharedPreferences?.getString(getString(R.string.keyWordKey), "education")
+
+        CompositeDisposable().add(jsonApi.getTranslation("translate?key=" + getString(R.string.translatorApiKey) +
+                "&text=" + text + "&lang=" + "ru-en")
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe{words->for(w in words) if (!w.word.contains("[0-9]")) wordsList?.add(w.word)}
+            .subscribe { result -> fetchWords(result.text[0])}
         )
     }
 }

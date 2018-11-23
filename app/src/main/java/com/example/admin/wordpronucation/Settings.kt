@@ -6,8 +6,10 @@ import android.content.SharedPreferences
 import android.content.res.Configuration
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
+import android.util.Log
 import android.widget.Toast
 import com.example.admin.wordpronucation.retrofit.MyApi
+import com.example.admin.wordpronucation.retrofit.TranslatorRetrofitClient
 import com.example.admin.wordpronucation.retrofit.WordRetrofitClient
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -38,46 +40,62 @@ class Settings: Activity() {
         if (!topic.isNullOrEmpty()) topic_edittext_settings.setText(topic)
 
         save_settings.setOnClickListener {
-            val jsonApi = WordRetrofitClient.instance.create(MyApi::class.java)
+            if (topic_edittext_settings.text.isEmpty()) {
+                Toast.makeText(this, "Enter topic!", Toast.LENGTH_LONG).show()
+                return@setOnClickListener
+            }
 
-            CompositeDisposable().add(jsonApi.getWordsForTheme(
-                getString(R.string.getWordsFromPhraseUrl) +
-                        topic_edittext_settings.text.toString() + "&max=5")
+            val jsonApi = TranslatorRetrofitClient.instance.create(MyApi::class.java)
+            val text = topic_edittext_settings.text.toString()
+
+            CompositeDisposable().add(jsonApi.getTranslation("translate?key=" + getString(R.string.translatorApiKey) +
+                    "&text=" + text + "&lang=" + "ru-en")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { words ->
-                    if (words.size != 5) {
-                        Toast.makeText(this, "Wrong Topic!", Toast.LENGTH_LONG).show()
-                        topic_edittext_settings.text.clear()
-                        return@subscribe
-                    }
-                    else {
-                        try {
-                            val time = time_limit_edittext_settings.text.toString().toInt()
-                            if (time in 2..5) {
-                                val editor = sharedPreferences?.edit()
-                                editor?.putInt(getString(R.string.timeLimitKey), time)
-                                editor?.apply()
-                            }
-                            else {
-                                Toast.makeText(this, "Wrong Time Limit!\n max = 5, min = 2", Toast.LENGTH_LONG).show()
-                                return@subscribe
-                            }
-                        } catch (e: Exception) {
-                            Toast.makeText(this, "Wrong Time Limit!", Toast.LENGTH_LONG).show()
-                            return@subscribe
-                        }
-
-
-                        Toast.makeText(this, "Right Topic!", Toast.LENGTH_LONG).show()
-                        val editor = sharedPreferences?.edit()
-                        editor?.putString(getString(R.string.keyWordKey), topic_edittext_settings.text.toString())
-                        editor?.apply()
-                        finish()
-                    }
-                }
+                .subscribe { result -> checkTopic(result.text[0])}
             )
         }
+    }
+
+    private fun checkTopic(topic: String) {
+        val jsonApi = WordRetrofitClient.instance.create(MyApi::class.java)
+        CompositeDisposable().add(jsonApi.getWordsForTheme(
+            getString(R.string.getWordsFromPhraseUrl) +
+                    topic + "&max=5")
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { words ->
+                if (words.size != 5) {
+                    Toast.makeText(this, "Wrong Topic!", Toast.LENGTH_LONG).show()
+                    topic_edittext_settings.text.clear()
+                    return@subscribe
+                }
+                else {
+                    try {
+                        val time = time_limit_edittext_settings.text.toString().toInt()
+                        if (time in 2..5) {
+                            val editor = sharedPreferences?.edit()
+                            editor?.putInt(getString(R.string.timeLimitKey), time)
+                            editor?.apply()
+                        }
+                        else {
+                            Toast.makeText(this, "Wrong Time Limit!\n max = 5, min = 2", Toast.LENGTH_LONG).show()
+                            return@subscribe
+                        }
+                    } catch (e: Exception) {
+                        Toast.makeText(this, "Wrong Time Limit!", Toast.LENGTH_LONG).show()
+                        return@subscribe
+                    }
+
+
+                    Toast.makeText(this, "Right Topic!", Toast.LENGTH_LONG).show()
+                    val editor = sharedPreferences?.edit()
+                    editor?.putString(getString(R.string.keyWordKey), topic_edittext_settings.text.toString())
+                    editor?.apply()
+                    finish()
+                }
+            }
+        )
     }
 
     private fun showChangeLanguageDialog() {
@@ -108,5 +126,4 @@ class Settings: Activity() {
         editor?.apply()
         finish()
     }
-
 }

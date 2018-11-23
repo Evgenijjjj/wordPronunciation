@@ -7,6 +7,8 @@
     <string name="best">Лучший</string>
     <string name="current">Текущий</string>
     <string name="timeLimitInSec">Время таймера (сек) :</string>
-    <string name="save">СОХРАНИТЬ</string>
+    <string name="save">Сохранить</string>
     <string name="changeLanguage">Изменить Язык</string>
+    <string name="topicHint">Задайте тему тренировки</string>
+    <string name="timeHint">Введите время</string>
 </resources>

@@ -9,4 +9,6 @@
     <string name="timeLimitInSec">Time limit in sec :</string>
     <string name="save">SAVE</string>
     <string name="changeLanguage">Change Language</string>
+    <string name="topicHint">Type expression</string>
+    <string name="timeHint">Type expression</string>
 </resources>
