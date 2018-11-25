@@ -8,6 +8,7 @@
         tools:context=".StartPage"
         android:background="@android:color/black">
 
+
     <FrameLayout
             android:layout_gravity="top"
             android:orientation="horizontal"
@@ -15,32 +16,58 @@
             android:layout_height="wrap_content"
             android:padding="10dp">
 
-        <TextView
+        <LinearLayout
+                android:id="@+id/topic_open_lv_btn_startpage"
+                android:orientation="horizontal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/topic"
-                android:textStyle="bold"
-                android:textSize="25dp"
-                android:layout_gravity="center_vertical"
-                android:textColor="@color/originalRed"/>
+                android:background="@drawable/rounded_item_row"
+                android:padding="5dp">
 
-        <TextView
-                android:id="@+id/topic_textview_startpage_activity"
-                android:text="theme"
-                android:layout_gravity="center_vertical"
-                android:textColor="@android:color/white"
-                android:textSize="22dp"
-                android:textStyle="bold"
-                android:layout_marginLeft="82dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+            <ImageView
+                    android:id="@+id/close_lv_btn_startpage"
+                    android:visibility="gone"
+                    android:background="@drawable/close"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"/>
+
+            <TextView
+                    android:id="@+id/topic_startpage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/topic"
+                    android:textStyle="bold"
+                    android:textSize="18dp"
+                    android:layout_gravity="center_vertical"
+                    android:textColor="@color/originalRed"/>
+
+            <TextView
+                    android:id="@+id/topic_textview_startpage_activity"
+                    android:text="theme"
+                    android:layout_gravity="center_vertical"
+                    android:textColor="@android:color/white"
+                    android:textSize="16dp"
+                    android:textStyle="italic|bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+
+        </LinearLayout>
+
+        <ImageView
+                android:id="@+id/close_settings_btn_startpage"
+                android:visibility="gone"
+                android:background="@drawable/close"
+                android:layout_width="25dp"
+                android:layout_gravity="center_vertical|right"
+                android:layout_height="25dp"/>
 
         <ImageView
                 android:id="@+id/settings_btn_startpage_activity"
                 android:layout_gravity="center_vertical|right"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:src="@drawable/gear"/>
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:background="@drawable/gear"/>
 
     </FrameLayout>
 
@@ -217,5 +244,18 @@
 
 
     </LinearLayout>
+
+    <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="400dp"
+            android:layout_marginTop="55dp">
+        <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/recyclerview_fragment_startpage">
+        </FrameLayout>
+
+    </FrameLayout>
+
 
 </FrameLayout>

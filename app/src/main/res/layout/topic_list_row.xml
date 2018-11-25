@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/constraintLayout"
+        android:background="@drawable/rounded_item_gray_row"
+        android:layout_marginTop="6dp"
+        android:layout_marginHorizontal="10dp">
+
+    <ImageView
+            android:id="@+id/img_topic_list_row"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_marginStart="10dp"
+            android:layout_gravity="center_vertical"
+            android:background="@android:drawable/ic_menu_compass"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+    <ImageView
+            android:id="@+id/download_topic_list_row"
+            android:layout_width="28dp"
+            android:background="@drawable/cloud_computing"
+            android:layout_height="28dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:layout_gravity="right|center_vertical"/>
+
+
+    <com.github.lzyzsd.circleprogress.CircleProgress
+            android:visibility="invisible"
+            android:id="@+id/circle_progress_topic_list_row"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            app:circle_text_size="10dp"
+            app:circle_unfinished_color="@color/originalRed"
+            app:circle_finished_color="@android:color/holo_green_light"
+            android:layout_gravity="right|center_vertical"/>
+
+    <TextView
+            android:id="@+id/topic_textview_topic_list_row"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#fff"
+            android:text="Тема"
+            android:textStyle="bold"
+            android:textSize="20dp"
+            android:layout_gravity="center" />
+
+
+
+
+
+</FrameLayout>

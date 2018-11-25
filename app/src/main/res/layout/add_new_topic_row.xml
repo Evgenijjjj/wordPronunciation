@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/constraintLayout"
+        android:background="@drawable/rounded_item_split_green_row"
+        android:layout_marginTop="12dp"
+        android:layout_marginHorizontal="20dp">
+
+    <FrameLayout
+            android:layout_marginRight="30dp"
+            android:layout_gravity="center_vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        <TextView
+                android:id="@+id/topic_textview_topic_list_row"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
+                android:text="Добавить тренировку"
+                android:textStyle="bold"
+                android:textSize="20dp"
+                android:layout_gravity="center"/>
+
+
+    </FrameLayout>
+
+    <TextView
+            android:id="@+id/add_topic_textview_row"
+            android:layout_gravity="right"
+            android:text="+"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:textSize="30dp"
+            android:textColor="@android:color/white"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:background="@drawable/round"/>
+
+
+</FrameLayout>

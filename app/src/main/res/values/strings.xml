@@ -8,13 +8,15 @@
     <string name="getWordsWithThemeUrl" translatable="false">words?rel_jjb=</string>
     <string name="getWordsFromPhraseUrl" translatable="false">words?ml=</string>
     <string name="languageSP" translatable="false">language</string>
-    <string name="translatorApiKey" translatable="false"></string>
-
+    <string name="translatorApiKey" translatable="false">
+    </string>
+    <string name="addNewTopicActivityResult" translatable="false">add_new_top_act_res</string>
 
 
     <string name="topicHint">Type expression</string>
     <string name="timeHint">Enter time</string>
-    <string name="topic">Topic :</string>
+    <string name="topic">Training theme:</string>
+    <string name="topic_of_train">Own training topic:</string>
     <string name="startBtnText">Tap to start</string>
     <string name="restartBtnText">Tap to restart</string>
     <string name="best">Best</string>
@@ -22,4 +24,10 @@
     <string name="timeLimitInSec">Time limit in sec :</string>
     <string name="save">SAVE</string>
     <string name="changeLanguage">Change Language</string>
+    <string name="check">Check</string>
+
+    <string name="random_words">Random Words</string>
+    <string name="elementary_level">Elementary Level</string>
+    <string name="middle_level">Middle Level</string>
+    <string name="advanced_level">Advanced Level</string>
 </resources>

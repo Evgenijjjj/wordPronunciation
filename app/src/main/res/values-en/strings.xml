@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Word Pronucation</string>
-    <string name="topic">Topic :</string>
+    <string name="topic">Training theme:</string>
     <string name="startBtnText">Tap to start</string>
     <string name="restartBtnText">Tap to restart</string>
     <string name="best">Best</string>
@@ -11,4 +11,10 @@
     <string name="changeLanguage">Change Language</string>
     <string name="topicHint">Type expression</string>
     <string name="timeHint">Type expression</string>
+    <string name="topic_of_train">Own training topic:</string>
+    <string name="random_words">Random Words</string>
+    <string name="check">Check</string>
+    <string name="elementary_level">Elementary Level</string>
+    <string name="advanced_level">Advanced Level</string>
+    <string name="middle_level">Middle Level</string>
 </resources>

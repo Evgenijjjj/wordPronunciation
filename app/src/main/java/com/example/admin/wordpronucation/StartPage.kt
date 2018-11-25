@@ -2,11 +2,11 @@ package com.example.admin.wordpronucation
 
 import android.Manifest
 import android.app.Activity
+import android.app.FragmentTransaction
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
-import android.content.res.Configuration
 import android.media.AudioManager
 import android.os.AsyncTask
 import android.os.Bundle
@@ -22,15 +22,20 @@ import android.support.v7.app.AlertDialog
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import com.example.admin.wordpronucation.fragments.SettingsFragment
+import com.example.admin.wordpronucation.fragments.TopicListFragment
 import com.example.admin.wordpronucation.models.WordPair
 import com.example.admin.wordpronucation.retrofit.MyApi
 import com.example.admin.wordpronucation.retrofit.TranslatorRetrofitClient
 import com.example.admin.wordpronucation.retrofit.WordRetrofitClient
+import com.example.admin.wordpronucation.vocabulary.Vocabulary
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_start_page.*
 import java.util.*
+
+const val START_PAGE_LOG = "start_page_log"
 
 class StartPage : Activity() {
 
@@ -42,22 +47,24 @@ class StartPage : Activity() {
     private var sharedPreferences: SharedPreferences? = null
 
     private var currentResult: String = ""
-    private var wordsList: MutableList<String>? = null
-
-    private var wordsPairsList: MutableList<WordPair>? = null
+    private var wordsPairsList: ArrayList<WordPair>? = null
 
     private var progressBarAsyncTask: TrainingAsyncTask? = null
     private var curIndex = 0
 
-    private lateinit var jsonApi: MyApi
-    private lateinit var compositeDisposable: CompositeDisposable
+    private var topicsFragTran: FragmentTransaction? = null
+    private var topicListFragment: TopicListFragment? = null
+
+    private var settingsFragTran: FragmentTransaction? = null
+    private var settingsListFragment: SettingsFragment? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_start_page)
 
         sharedPreferences = getSharedPreferences(getString(R.string.sharedPrefName), Context.MODE_PRIVATE)
 
-        setContentView(R.layout.activity_start_page)
+        Log.d(START_PAGE_LOG, "OnCreate")
 
         ripple_animation_startpage_activit.startRippleAnimation()
         ripple_animation_startpage_activit.visibility = View.INVISIBLE
@@ -68,8 +75,6 @@ class StartPage : Activity() {
         mAudioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
         setBestResToView()
-        wordsList = mutableListOf()
-        wordsPairsList = mutableListOf()
 
         mTextToSpeech = TextToSpeech(this, TextToSpeech.OnInitListener {
             if (it != TextToSpeech.ERROR) {
@@ -78,6 +83,40 @@ class StartPage : Activity() {
                 mTextToSpeech?.setSpeechRate(0.8f)
             }
         })
+        topic_open_lv_btn_startpage.setOnClickListener {
+            if (settingsFragTran != null) {
+                Toast.makeText(this, "Please close settings", Toast.LENGTH_LONG).show()
+                return@setOnClickListener
+            }
+
+            if (topicsFragTran == null) {
+                topicsFragTran = fragmentManager.beginTransaction()
+                topicListFragment = TopicListFragment()
+                topicsFragTran?.replace(R.id.recyclerview_fragment_startpage, topicListFragment)
+                topicsFragTran?.commit()
+
+                topic_startpage.visibility = View.GONE
+                topic_textview_startpage_activity.visibility = View.GONE
+                close_lv_btn_startpage.visibility = View.VISIBLE
+                topic_open_lv_btn_startpage.background = getDrawable(android.R.color.transparent)
+                start_textview_startpage_activity.visibility = View.INVISIBLE
+
+            }
+            else {
+                topicsFragTran = fragmentManager.beginTransaction()
+                topicsFragTran?.replace(R.id.recyclerview_fragment_startpage, android.app.Fragment())
+                topicsFragTran?.remove(topicListFragment)
+                topicsFragTran?.commit()
+                topicsFragTran = null
+
+                topic_startpage.visibility = View.VISIBLE
+                topic_textview_startpage_activity.visibility = View.VISIBLE
+                close_lv_btn_startpage.visibility = View.GONE
+                topic_open_lv_btn_startpage.background = getDrawable(R.drawable.rounded_item_row)
+                start_textview_startpage_activity.visibility = View.VISIBLE
+
+            }
+        }
 
         mTextToSpeech?.setOnUtteranceProgressListener(object :UtteranceProgressListener() {
 
@@ -118,17 +157,44 @@ class StartPage : Activity() {
         }
 
         settings_btn_startpage_activity.setOnClickListener {
-            startActivity(Intent(this, Settings::class.java))
+            if (topicsFragTran != null) {
+                Toast.makeText(this, "Please close topics", Toast.LENGTH_LONG).show()
+                return@setOnClickListener
+            }
+
+            if (settingsFragTran == null) {
+                settingsFragTran = fragmentManager.beginTransaction()
+                settingsFragTran?.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit)
+                settingsListFragment = SettingsFragment()
+                settingsFragTran?.replace(R.id.recyclerview_fragment_startpage, settingsListFragment)
+                settingsFragTran?.commit()
+
+                close_settings_btn_startpage.visibility = View.VISIBLE
+                settings_btn_startpage_activity.background = getDrawable(android.R.color.transparent)
+                start_textview_startpage_activity.visibility = View.INVISIBLE
+
+            }
+            else {
+                settingsFragTran = fragmentManager.beginTransaction()
+                settingsFragTran?.replace(R.id.recyclerview_fragment_startpage, android.app.Fragment())
+                settingsFragTran?.remove(settingsListFragment)
+                settingsFragTran?.commit()
+                settingsFragTran = null
+
+                close_settings_btn_startpage.visibility = View.GONE
+                settings_btn_startpage_activity.background = getDrawable(R.drawable.gear)
+                start_textview_startpage_activity.visibility = View.VISIBLE
+
+            }
         }
     }
 
     private fun enterTraining() {
-        wordsPairsList?.shuffle()
-
-        if (wordsPairsList!!.isEmpty()) {
+        if (wordsPairsList == null || wordsPairsList!!.isEmpty()) {
             Toast.makeText(this, "Ethernet error\nPleas turn on ethernet", Toast.LENGTH_SHORT).show()
             return
         }
+        wordsPairsList!!.shuffle()
 
         start_textview_startpage_activity.visibility = View.INVISIBLE
         current_word_framelayout_startpage_activity.visibility = View.VISIBLE
@@ -212,7 +278,6 @@ class StartPage : Activity() {
             start_textview_startpage_activity.visibility = View.VISIBLE
             ripple_animation_startpage_activit.visibility = View.INVISIBLE
 
-            Log.d("test_retrofit", wordsList?.size.toString())
             current_word_framelayout_startpage_activity.visibility = View.INVISIBLE
 
             start_textview_startpage_activity.text = getString(R.string.restartBtnText)
@@ -331,10 +396,9 @@ class StartPage : Activity() {
     override fun onStart() {
         super.onStart()
         loadLocale()
-        val topic = sharedPreferences?.getString(getString(R.string.keyWordKey), "education")
+        val topic = sharedPreferences?.getString(getString(R.string.keyWordKey), getString(R.string.random_words))
         topic_textview_startpage_activity.text = topic
-
-        updateWords()
+        updateWords(topic!!)
     }
 
     override fun onDestroy() {
@@ -392,7 +456,6 @@ class StartPage : Activity() {
     private fun setLocale(lang: String) {
         val locale = Locale(lang)
         val config = this.resources.configuration
-
         Locale.setDefault(locale)
         config.setLocale(locale)
         resources.updateConfiguration(config, resources.displayMetrics)
@@ -408,49 +471,14 @@ class StartPage : Activity() {
             showChangeLanguageDialog()
             return
         }
-        Log.d("cdsvsdvs", "setlocale: $lang")
         setLocale(lang!!)
 
     }
 
-    private fun fillWordsPairsList() {
-        val jsonApi = TranslatorRetrofitClient.instance.create(MyApi::class.java)
-
-        for (word in wordsList!!) {
-            CompositeDisposable().add(jsonApi.getTranslation("translate?key=" + getString(R.string.translatorApiKey) +
-                    "&text=" + word + "&lang=" + "en-ru")
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { result -> wordsPairsList?.add(WordPair(word, result.text[0]))}
-            )
-        }
-    }
-
-    private fun fetchWords(keyWord: String) {
-        wordsList?.clear()
-        Log.d("test_async", "keyWord = $keyWord")
-
-        val retrofit = WordRetrofitClient.instance
-        jsonApi = retrofit.create(MyApi::class.java)
-        compositeDisposable = CompositeDisposable()
-
-        compositeDisposable.add(
-            jsonApi.getWordsForTheme(getString(R.string.getWordsFromPhraseUrl) + keyWord)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { words -> for (w in words) if (!w.word.contains("[0-9]")) wordsList?.add(w.word); fillWordsPairsList() }
-        )
-    }
-
-    private fun updateWords(){
-        val jsonApi = TranslatorRetrofitClient.instance.create(MyApi::class.java)
-        val text = sharedPreferences?.getString(getString(R.string.keyWordKey), "education")
-
-        CompositeDisposable().add(jsonApi.getTranslation("translate?key=" + getString(R.string.translatorApiKey) +
-                "&text=" + text + "&lang=" + "ru-en")
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { result -> fetchWords(result.text[0])}
-        )
+    private fun updateWords(topic: String) {
+            wordsPairsList = Vocabulary(this).getWordsWithTopic(topic)
+            if (wordsPairsList == null) {
+                Toast.makeText(this, "Vocabulary error!", Toast.LENGTH_LONG).show()
+            }
     }
 }

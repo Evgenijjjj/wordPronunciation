@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Тренировка Произношения</string>
-    <string name="topic">Тема :</string>
+    <string name="topic">"Тема тренировки : "</string>
     <string name="startBtnText">Начать</string>
     <string name="restartBtnText">Повторить</string>
     <string name="best">Лучший</string>
@@ -11,4 +11,10 @@
     <string name="changeLanguage">Изменить Язык</string>
     <string name="topicHint">Задайте тему тренировки</string>
     <string name="timeHint">Введите время</string>
+    <string name="topic_of_train">"Собственная тема тренировки : "</string>
+    <string name="random_words">Случайные слова</string>
+    <string name="check">Найти</string>
+    <string name="elementary_level">Начальный уровень</string>
+    <string name="advanced_level">Средний уровень</string>
+    <string name="middle_level">Продвинутый уровень</string>
 </resources>
