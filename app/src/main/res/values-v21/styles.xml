@@ -7,4 +7,10 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:navigationBarColor">@android:color/black</item>
     </style>
+    <style name="CustomSeekBar" parent="@style/Widget.AppCompat.SeekBar.Discrete">
+        <item name="android:progressBackgroundTint">@android:color/white</item>
+        <item name="android:progressTint">@color/originalRed</item>
+        <item name="android:colorControlActivated">#c51162</item>
+        <item name="tickMark">@drawable/rounded_item_split_green_row</item>
+    </style>
 </resources>

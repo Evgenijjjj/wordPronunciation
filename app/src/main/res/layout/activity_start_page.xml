@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout
+        android:id="@+id/activity_start_page"
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:ads="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".StartPage"
@@ -16,20 +18,22 @@
             android:layout_height="wrap_content"
             android:padding="10dp">
 
+        <ImageButton
+                android:layout_marginTop="5dp"
+                android:id="@+id/close_lv_btn_startpage"
+                android:visibility="invisible"
+                android:background="@drawable/close"
+                android:layout_width="25dp"
+                android:layout_height="25dp"/>
+
         <LinearLayout
-                android:id="@+id/topic_open_lv_btn_startpage"
+                android:visibility="visible"
+                android:id="@+id/open_lv_btn_startpage"
                 android:orientation="horizontal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/rounded_item_row"
                 android:padding="5dp">
-
-            <ImageView
-                    android:id="@+id/close_lv_btn_startpage"
-                    android:visibility="gone"
-                    android:background="@drawable/close"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"/>
 
             <TextView
                     android:id="@+id/topic_startpage"
@@ -54,7 +58,7 @@
 
         </LinearLayout>
 
-        <ImageView
+        <ImageButton
                 android:id="@+id/close_settings_btn_startpage"
                 android:visibility="gone"
                 android:background="@drawable/close"
@@ -177,6 +181,7 @@
             android:weightSum="2"
             android:layout_gravity="bottom"
             android:layout_width="match_parent"
+            android:layout_marginBottom="30dp"
             android:layout_height="120dp">
 
         <FrameLayout
@@ -197,7 +202,7 @@
                     android:padding="10dp"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:src="@drawable/ring"/>
+                    android:src="@drawable/ring" android:id="@+id/best_result_box_startpage"/>
 
             <TextView
                     android:textStyle="bold"
@@ -229,7 +234,7 @@
                     android:padding="10dp"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:src="@drawable/ring"/>
+                    android:src="@drawable/ring" android:id="@+id/current_result_box_startpage"/>
 
             <TextView
                     android:textStyle="bold"
@@ -256,6 +261,21 @@
         </FrameLayout>
 
     </FrameLayout>
+
+    <RelativeLayout
+            android:layout_gravity="bottom|center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+        <com.google.android.gms.ads.AdView
+                android:id="@+id/adViewBottom"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                ads:adSize="BANNER"
+                ads:adUnitId="@string/banner_ad_unit_id">
+        </com.google.android.gms.ads.AdView>
+
+    </RelativeLayout>
 
 
 </FrameLayout>

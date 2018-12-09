@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Word Pronucation</string>
+    <string name="app_name">Word Pronunciation</string>
     <string name="topic">Training theme:</string>
     <string name="startBtnText">Tap to start</string>
     <string name="restartBtnText">Tap to restart</string>
     <string name="best">Best</string>
     <string name="current">Current</string>
-    <string name="timeLimitInSec">Time limit in sec :</string>
+    <string name="timeLimitInSec">Time limit :</string>
     <string name="save">SAVE</string>
     <string name="changeLanguage">Change Language</string>
     <string name="topicHint">Type expression</string>
@@ -17,4 +17,13 @@
     <string name="elementary_level">Elementary Level</string>
     <string name="advanced_level">Advanced Level</string>
     <string name="middle_level">Middle Level</string>
+    <string name="pronunciation_speed">Pronunciation speed :</string>
+    <string name="sec">sec</string>
+    <string name="thisTopicIsRemoved">This topic is removed</string>
+    <string name="pleaseCloseTopics">Please close topics</string>
+    <string name="pleaseCloseSettings">Please close settings</string>
+    <string name="wrong">WRONG</string>
+    <string name="settingsFragment">settings_fragment</string>
+    <string name="yandex_ref_text">Translated by Yandex translate service</string>
+    <string name="topicListFragment">topic_list_fragment</string>
 </resources>

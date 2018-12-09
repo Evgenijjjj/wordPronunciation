@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Тренировка Произношения</string>
+    <string name="app_name">Английский: Тренировка Произношения</string>
     <string name="topic">"Тема тренировки : "</string>
     <string name="startBtnText">Начать</string>
     <string name="restartBtnText">Повторить</string>
     <string name="best">Лучший</string>
     <string name="current">Текущий</string>
-    <string name="timeLimitInSec">Время таймера (сек) :</string>
+    <string name="timeLimitInSec">Время таймера :</string>
     <string name="save">Сохранить</string>
     <string name="changeLanguage">Изменить Язык</string>
     <string name="topicHint">Задайте тему тренировки</string>
@@ -17,4 +17,13 @@
     <string name="elementary_level">Начальный уровень</string>
     <string name="advanced_level">Средний уровень</string>
     <string name="middle_level">Продвинутый уровень</string>
+    <string name="pronunciation_speed">Скорость диктора :</string>
+    <string name="sec">сек</string>
+    <string name="thisTopicIsRemoved">Эта тема удалена</string>
+    <string name="pleaseCloseTopics">Закройте выбор темы тренировки</string>
+    <string name="pleaseCloseSettings">Закройте настройки</string>
+    <string name="wrong">НЕПРАВИЛЬНО</string>
+    <string name="settingsFragment">settings_fragment</string>
+    <string name="yandex_ref_text">Translated by Yandex translate service</string>
+    <string name="topicListFragment">topic_list_fragment</string>
 </resources>

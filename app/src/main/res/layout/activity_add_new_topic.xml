@@ -3,20 +3,32 @@
         android:orientation="vertical"
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
-        android:weightSum="2"
+        android:weightSum="3"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".AddNewTopicActivity" xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerview_new_words_activity_add_new_topic"
-            android:layout_weight="0.20"
+            android:layout_weight="0.2"
             app:layoutManager="android.support.v7.widget.LinearLayoutManager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 
+    <TextView
+            android:visibility="invisible"
+            android:id="@+id/yandex_ref_add_new_topic"
+            android:textStyle="bold"
+            android:textSize="16dp"
+            android:gravity="center"
+            android:layout_weight="1.45"
+            android:text="@string/yandex_ref_text"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+
     <LinearLayout
-            android:layout_weight="1.8"
+            android:layout_weight="1.35"
             android:weightSum="2"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -58,11 +70,21 @@
 
         </LinearLayout>
 
-        <LinearLayout
+        <FrameLayout
                 android:gravity="center"
                 android:layout_weight="1.4"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
+
+            <com.github.lzyzsd.circleprogress.CircleProgress
+                    android:visibility="invisible"
+                    android:id="@+id/circle_progress_add_new_topic_activity"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    app:circle_text_size="10dp"
+                    app:circle_unfinished_color="@color/originalRed"
+                    app:circle_finished_color="@android:color/holo_green_light"
+                    android:layout_gravity="center"/>
 
             <Button
                     android:id="@+id/push_btn_add_topic_activity"
@@ -75,7 +97,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"/>
 
-        </LinearLayout>
+        </FrameLayout>
 
     </LinearLayout>
 
