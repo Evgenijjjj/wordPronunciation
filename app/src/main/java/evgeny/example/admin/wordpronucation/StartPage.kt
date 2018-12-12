@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.support.v4.app.ActivityCompat
@@ -30,10 +31,6 @@ const val START_PAGE_LOG = "start_page_log"
 
 class StartPage : FragmentActivity(), UiListener {
 
-    companion object {
-
-    }
-
     private var sharedPreferences: SharedPreferences? = null
 
     private var wordsPairsList: ArrayList<WordPair>? = null
@@ -41,6 +38,8 @@ class StartPage : FragmentActivity(), UiListener {
     private var training: Training? = null
 
     private val animationTime = 250L
+
+    private val startTime = 1000L
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,10 +73,12 @@ class StartPage : FragmentActivity(), UiListener {
 
             val newFragment = TopicListFragment()
             newFragment.callback = {
-                val topic = sharedPreferences?.getString(getString(R.string.keyWordKey), getString(R.string.random_words))
+                val topic =
+                    sharedPreferences?.getString(getString(R.string.keyWordKey), getString(R.string.random_words))
                 topic_textview_startpage_activity.text = topic
                 updateWords(topic!!)
                 close_lv_btn_startpage.performClick()
+
             }
 
             Handler().postDelayed({
@@ -110,7 +111,8 @@ class StartPage : FragmentActivity(), UiListener {
         }
 
         close_lv_btn_startpage.setOnClickListener {
-            val fragment = supportFragmentManager.findFragmentByTag(getString(R.string.topicListFragment)) ?: return@setOnClickListener
+            val fragment = supportFragmentManager.findFragmentByTag(getString(R.string.topicListFragment))
+                ?: return@setOnClickListener
             val shadow = TopicListFragment()
 
             supportFragmentManager.beginTransaction()
@@ -142,7 +144,7 @@ class StartPage : FragmentActivity(), UiListener {
 
             it.isClickable = false
 
-            if (fragment!= null) {
+            if (fragment != null) {
                 close_lv_btn_startpage.performClick()
                 delay = animationTime
             }
@@ -181,7 +183,8 @@ class StartPage : FragmentActivity(), UiListener {
         }
 
         close_settings_btn_startpage.setOnClickListener {
-            val fragment = supportFragmentManager.findFragmentByTag(getString(R.string.settingsFragment)) ?: return@setOnClickListener
+            val fragment = supportFragmentManager.findFragmentByTag(getString(R.string.settingsFragment))
+                ?: return@setOnClickListener
             val shadow = SettingsFragment()
 
             supportFragmentManager.beginTransaction()
@@ -207,8 +210,8 @@ class StartPage : FragmentActivity(), UiListener {
             }, animationTime)
         }
 
-        activity_start_page.setOnTouchListener{ _, m: MotionEvent ->
-           // Log.d(START_PAGE_LOG, "touch at x = ${m.x}, y = ${m.y}, action: ${m.action}, // ${MotionEvent.ACTION_UP}")
+        activity_start_page.setOnTouchListener { _, m: MotionEvent ->
+            // Log.d(START_PAGE_LOG, "touch at x = ${m.x}, y = ${m.y}, action: ${m.action}, // ${MotionEvent.ACTION_UP}")
             if (m.action == MotionEvent.ACTION_UP) {
                 when {
                     supportFragmentManager.findFragmentByTag(getString(R.string.settingsFragment)) != null -> close_settings_btn_startpage.performClick()
@@ -220,9 +223,46 @@ class StartPage : FragmentActivity(), UiListener {
         }
 
         start_textview_startpage_activity.setOnClickListener {
-            training?.startTraining(null)
-        }
+            it.isClickable = false
+            start_textview_startpage_activity.text = ""
+            val startTextColor = start_textview_startpage_activity.currentTextColor
+            val startSize = start_textview_startpage_activity.textSize
 
+            checkPermissions()
+
+            //?????????????
+            start_textview_startpage_activity.textSize = 100f
+            start_textview_startpage_activity.setTextColor(Color.WHITE)
+
+            start_textview_startpage_activity.text = "3"
+            YoYo.with(Techniques.ZoomIn)
+                .delay(startTime)
+                .playOn(start_textview_startpage_activity)
+
+            Handler().postDelayed({
+                start_textview_startpage_activity.text = "2"
+                YoYo.with(Techniques.ZoomIn)
+                    .delay(startTime)
+                    .playOn(start_textview_startpage_activity)
+
+                Handler().postDelayed({
+                    start_textview_startpage_activity.text = "1"
+                    YoYo.with(Techniques.ZoomIn)
+                        .delay(startTime)
+                        .playOn(start_textview_startpage_activity)
+
+                    Handler().postDelayed({
+                        start_textview_startpage_activity.setTextColor(startTextColor)
+                        start_textview_startpage_activity.textSize = 30f
+                        it.isClickable = true
+
+                        training?.startTraining(wordsPairsList)
+                    }, startTime)
+                }, startTime)
+            }, startTime)
+
+            //-----------
+        }
     }
 
     private fun checkPermissions(): Boolean {
@@ -335,7 +375,8 @@ class StartPage : FragmentActivity(), UiListener {
     private fun updateWords(topic: String) {
         wordsPairsList = Vocabulary(this).getWordsWithTopic(topic)
         if (wordsPairsList == null) {
-            Toast.makeText(this, getString(R.string.thisTopicIsRemoved), Toast.LENGTH_LONG).show()
+            //Toast.makeText(this, getString(R.string.thisTopicIsRemoved), Toast.LENGTH_LONG).show()
+            topic_textview_startpage_activity.text = getString(R.string.random_words)
         }
     }
 
@@ -394,15 +435,17 @@ class StartPage : FragmentActivity(), UiListener {
     }
 
     override fun updateSharedPref() {
-        if (best_result_textview_startpage_activity.text.toString().toInt() < current_result_textview_startpage_activity.text.toString().toInt()) {
-            val editor = sharedPreferences?.edit()
-            editor?.putInt(
-                getString(R.string.bestResultKey),
-                current_result_textview_startpage_activity.text.toString().toInt()
-            )
-            editor?.apply()
-            best_result_textview_startpage_activity.text = current_result_textview_startpage_activity.text
-        }
+        try {
+            if (best_result_textview_startpage_activity.text.toString().toInt() < current_result_textview_startpage_activity.text.toString().toInt()) {
+                val editor = sharedPreferences?.edit()
+                editor?.putInt(
+                    getString(R.string.bestResultKey),
+                    current_result_textview_startpage_activity.text.toString().toInt()
+                )
+                editor?.apply()
+                best_result_textview_startpage_activity.text = current_result_textview_startpage_activity.text
+            }
+        } catch (e: NumberFormatException) {Log.d(START_PAGE_LOG, "update pref err: $e")}
     }
 
     override fun setProgressBarForegroundStrokeWidth(width: Float) {

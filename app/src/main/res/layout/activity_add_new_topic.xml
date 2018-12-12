@@ -3,7 +3,7 @@
         android:orientation="vertical"
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
-        android:weightSum="3"
+        android:weightSum="2"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".AddNewTopicActivity" xmlns:app="http://schemas.android.com/apk/res-auto">
@@ -15,20 +15,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 
-    <TextView
-            android:visibility="invisible"
-            android:id="@+id/yandex_ref_add_new_topic"
-            android:textStyle="bold"
-            android:textSize="16dp"
-            android:gravity="center"
-            android:layout_weight="1.45"
-            android:text="@string/yandex_ref_text"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-
-
     <LinearLayout
-            android:layout_weight="1.35"
+            android:layout_weight="1.8"
             android:weightSum="2"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -87,6 +75,7 @@
                     android:layout_gravity="center"/>
 
             <Button
+                    android:visibility="visible"
                     android:id="@+id/push_btn_add_topic_activity"
                     android:background="@android:color/transparent"
                     android:gravity="center"
@@ -94,6 +83,17 @@
                     android:textColor="@android:color/white"
                     android:textSize="20dp"
                     android:textStyle="bold"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+
+            <TextView
+                    android:visibility="invisible"
+                    android:id="@+id/translation_status_textview_add_topic_activity"
+                    android:textColor="@android:color/white"
+                    android:textStyle="bold"
+                    android:textSize="20dp"
+                    android:textAlignment="center"
+                    android:gravity="center"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"/>
 
