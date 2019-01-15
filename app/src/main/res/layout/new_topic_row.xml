@@ -31,6 +31,7 @@
             android:layout_height="match_parent">
 
         <TextView
+                android:layout_gravity="center_vertical"
                 android:layout_marginLeft="10dp"
                 android:id="@+id/original_word_new_topic_row"
                 android:layout_width="wrap_content"

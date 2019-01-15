@@ -2,6 +2,7 @@ package evgeny.example.admin.wordpronucation
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.AsyncTask
 import android.os.Bundle
@@ -9,6 +10,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
@@ -18,10 +20,14 @@ import evgeny.example.admin.wordpronucation.database.interfaces.TopicDataDao
 import evgeny.example.admin.wordpronucation.database.interfaces.WordsPairDataDao
 import evgeny.example.admin.wordpronucation.database.tables.TopicData
 import evgeny.example.admin.wordpronucation.database.tables.WordsPairData
+import evgeny.example.admin.wordpronucation.models.Word
 import evgeny.example.admin.wordpronucation.models.WordPair
+import evgeny.example.admin.wordpronucation.parsing.PARSING_LOG
+import evgeny.example.admin.wordpronucation.parsing.Query
 import evgeny.example.admin.wordpronucation.retrofit.MyApi
 import evgeny.example.admin.wordpronucation.retrofit.WordRetrofitClient
 import evgeny.example.admin.wordpronucation.views.NewTopicListRow
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -34,7 +40,7 @@ const val ADD_NEW_TOPIC_ACTIVITY_TAG = "add_new_topic_activity"
 
 class AddNewTopicActivity : Activity() {
     companion object {
-        var adapter: GroupAdapter<ViewHolder>? = null
+        var adapter: GroupAdapter<ViewHolder> = GroupAdapter()
         val wordsPairsList = ArrayList<WordPair>()
     }
 
@@ -43,6 +49,7 @@ class AddNewTopicActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_new_topic)
+        recyclerview_new_words_activity_add_new_topic.adapter = adapter
 
         push_btn_add_topic_activity.setOnClickListener {
             if (!checkFlag) {
@@ -56,11 +63,17 @@ class AddNewTopicActivity : Activity() {
                 wordsPairsList.clear()
                 val task = SearchWordsTask(edit_text_add_topic_activity.text.toString())
                 task.execute()
+                //findWords(edit_text_add_topic_activity.text.toString())
                 checkFlag = true
+
+                (getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
+                    .hideSoftInputFromWindow(edit_text_add_topic_activity.applicationWindowToken, InputMethodManager.HIDE_NOT_ALWAYS)
+                edit_text_add_topic_activity.clearFocus()
+
                 return@setOnClickListener
             }
 
-            if (adapter?.itemCount == 0) {
+            if (adapter.itemCount == 0) {
                 push_btn_add_topic_activity.text = getString(R.string.check)
                 Toast.makeText(this, "List is empty!", Toast.LENGTH_LONG).show()
                 return@setOnClickListener
@@ -86,6 +99,23 @@ class AddNewTopicActivity : Activity() {
                 }
             }
         })
+    }
+
+    @SuppressLint("CheckResult")
+    private fun findWords(keyWord: String) {
+        Query().queryTranslateTopic(keyWord)
+            .subscribe { topic ->
+                if (topic.isNotEmpty())
+                    CompositeDisposable().add(Query().querySearchWordsForTheme(getString(R.string.getWordsFromPhraseUrl) + topic)
+                        .subscribe { listOfWords ->
+                            Query().queryTranslationResult(listOfWords, "en-ru")
+                                .flatMap { words -> Observable.fromIterable(words) }
+                                .doOnNext { element ->
+                                    adapter.add(NewTopicListRow(element))
+                                }
+                                .subscribe()
+                        })
+            }
     }
 
     private inner class SearchWordsTask(private val topic: String) : AsyncTask<Void, Array<Int>, Void>() {
@@ -129,7 +159,8 @@ class AddNewTopicActivity : Activity() {
                 val jsonWordsApi = WordRetrofitClient.instance.create(MyApi::class.java)
 
                 CompositeDisposable().add(jsonWordsApi.getWordsForTheme(
-                    getString(R.string.getWordsFromPhraseUrl) + engTopic)
+                    getString(R.string.getWordsFromPhraseUrl) + engTopic
+                )
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe { wordsList ->
@@ -143,7 +174,10 @@ class AddNewTopicActivity : Activity() {
 
                     })
 
-                while (isNowSearchingWordsFlag) try { Thread.sleep(25) } catch (e: Exception) { }
+                while (isNowSearchingWordsFlag) try {
+                    Thread.sleep(25)
+                } catch (e: Exception) {
+                }
 
                 var wordsCount = engWordsList.size
                 var i = 0
@@ -180,9 +214,8 @@ class AddNewTopicActivity : Activity() {
 
             if (addNewElementInAdapterFlag) {
                 try {
-                    adapter?.add(NewTopicListRow(wordsPairsList[values[0]?.first()!! - 1]))
-                    adapter?.notifyDataSetChanged()
-                    //recyclerview_new_words_activity_add_new_topic.scrollToPosition(adapter?.itemCount!! - 1)
+                    adapter.add(NewTopicListRow(wordsPairsList[values[0]?.first()!! - 1]))
+                    adapter.notifyDataSetChanged()
                 } catch (e: Exception) {
                     Log.d(ADD_NEW_TOPIC_ACTIVITY_TAG, e.toString())
                 }
@@ -261,7 +294,7 @@ class AddNewTopicActivity : Activity() {
 
             push_btn_add_topic_activity.visibility = View.INVISIBLE
             circle_progress_add_new_topic_activity.visibility = View.VISIBLE
-            circle_progress_add_new_topic_activity.max = adapter?.itemCount!! - 1
+            circle_progress_add_new_topic_activity.max = adapter.itemCount - 1
         }
     }
 }
